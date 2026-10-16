@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Notes en ligne</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+/* Concept : un cahier d'école. Cadre sobre vert profond, fiche de notes sur page à marge rouge, administration en registres réglés. */
+:root{
+  --bg:#F1F4F2; --surface:#FFFFFF; --ink:#14221E; --muted:#56675F; --line:#D3DCD7;
+  --brand:#0E4D45; --on-brand:#FFFFFF; --tint:#E3EEE9; --margin:#C2453A;
+  --good:#17724A; --warn:#8F5A0C; --bad:#B3261E;
+  --f-display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C1512; --surface:#13201B; --ink:#E5EEEA; --muted:#8FA59D; --line:#25372F;
+    --brand:#46C2AB; --on-brand:#06211B; --tint:#1A2D26; --margin:#E06A5E;
+    --good:#4FCB8C; --warn:#E0A44A; --bad:#FF8A7E; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C1512; --surface:#13201B; --ink:#E5EEEA; --muted:#8FA59D; --line:#25372F;
+  --brand:#46C2AB; --on-brand:#06211B; --tint:#1A2D26; --margin:#E06A5E;
+  --good:#4FCB8C; --warn:#E0A44A; --bad:#FF8A7E; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--f-body);padding-block:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1000px;margin:0 auto;padding-block:8px 56px}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;margin:0;text-wrap:balance}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+.bar{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;padding-block:20px 16px;border-bottom:2px solid var(--brand)}
+.kicker{font:500 12px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.bar h1{font-size:clamp(1.25rem,4.6vw,1.9rem);font-weight:700;margin-top:2px}
+.sub{color:var(--muted);font-size:14px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{font-weight:600;font-size:14px;padding:10px 14px;min-height:44px;border:1px solid var(--line);background:transparent;border-radius:8px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+
+.btn{font-weight:600;padding:10px 16px;min-height:44px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer}
+.btn.primary{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.petit{min-height:36px;padding:6px 12px;font-size:14px}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+
+input,select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:9px 10px;min-height:44px;width:100%;min-width:0}
+textarea{min-height:88px;resize:vertical}
+label{display:block;font-weight:600;font-size:14px;margin-bottom:4px}
+
+/* Espace parents */
+.intro{padding-block:32px 8px;max-width:640px}
+.intro h2{font-size:clamp(1.6rem,6vw,2.4rem);font-weight:700}
+.lead{color:var(--muted);margin-top:10px}
+.recherche{margin-top:24px}
+.champ{display:flex;gap:8px;flex-wrap:wrap}
+.champ input{flex:1 1 220px;font:500 18px var(--f-mono);letter-spacing:.04em;text-transform:uppercase}
+.aide,.maj{color:var(--muted);font-size:14px;margin-top:8px}
+.err{color:var(--bad);font-weight:600;margin-top:8px}
+.ok{color:var(--good);font-weight:600}
+.vide{color:var(--muted);margin-top:16px}
+
+.cahier{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:22px 16px 22px 48px;margin-top:28px}
+.cahier::before{content:"";position:absolute;top:0;bottom:0;left:32px;width:2px;background:var(--margin);opacity:.6}
+.eleve{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between;align-items:baseline}
+.eleve h3{font-size:1.5rem;font-weight:700}
+.eleve .cl{color:var(--muted)}
+.mat{font:500 13px var(--f-mono);color:var(--muted);letter-spacing:.06em}
+.pers{display:flex;gap:6px;flex-wrap:wrap;margin-top:18px}
+.lignes{list-style:none;margin:12px 0 0;padding:0}
+.ligne{display:grid;grid-template-columns:minmax(0,1fr) 46px 76px;gap:8px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line)}
+.ligne.tete{font:500 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-block:4px}
+.ligne .nom{font-weight:600;overflow-wrap:anywhere}
+.ligne .obs{display:block;color:var(--muted);font-size:14px}
+.ligne .coef{font:400 15px var(--f-mono);text-align:right;color:var(--muted)}
+.note{font:500 19px var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+.note.bon{color:var(--good);font-weight:600}
+.note.bas{color:var(--bad);text-decoration:underline wavy;text-underline-offset:5px}
+.moy{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:22px}
+.moy .lib{font-weight:600}
+.moy .val{font:700 2.6rem/1 var(--f-display);font-variant-numeric:tabular-nums}
+.moy .sur{color:var(--muted)}
+.jauge{height:8px;background:var(--tint);border-radius:4px;margin-top:10px;overflow:hidden}
+.jauge i{display:block;height:100%;background:var(--brand)}
+.jauge.bas i{background:var(--bad)}
+.appr{margin:20px 0 0;padding:12px 14px;background:var(--tint);border-radius:6px}
+.appr b{display:block;font:500 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.nouv{margin-top:20px}
+
+/* Administration */
+.pub{display:flex;flex-wrap:wrap;gap:12px 20px;justify-content:space-between;align-items:center;padding:16px;border:1px solid var(--line);background:var(--surface);border-radius:8px;margin-block:20px}
+.pub strong{font-family:var(--f-display);font-size:1.1rem}
+.pastille{display:inline-block;font:500 12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;margin-left:8px;vertical-align:middle;border:1px solid currentColor}
+.pastille.ok{color:var(--good)}
+.pastille.sale{color:var(--warn)}
+.pastille.non{color:var(--muted)}
+.pubact{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.prog{font:500 13px var(--f-mono);color:var(--muted)}
+.sec{margin-top:8px;margin-bottom:20px}
+.grille{display:grid;grid-template-columns:minmax(240px,320px) minmax(0,1fr);gap:20px;align-items:start}
+.panneau{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;min-width:0}
+.panneau h3{font-size:1.15rem;margin-bottom:12px}
+.outils{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.filtres{display:grid;gap:8px}
+.liste{display:grid;gap:4px;margin-top:12px;max-height:480px;overflow-y:auto}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 8px;text-align:left;padding:8px 10px;border:1px solid transparent;border-radius:6px;background:transparent;cursor:pointer;min-height:44px}
+.item:hover{background:var(--tint)}
+.item[aria-current="true"]{background:var(--tint);border-color:var(--brand)}
+.item .n{font-weight:600;overflow-wrap:anywhere}
+.item .c{font-size:13px;color:var(--muted);text-align:right}
+.item .m{grid-column:1/-1;font:400 12px var(--f-mono);color:var(--muted)}
+.form2{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.lgh,.lg{display:grid;grid-template-columns:minmax(0,1fr) 64px 78px 40px;gap:8px;align-items:center}
+.lgh{font:500 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:16px}
+.lg{padding:10px 0;border-bottom:1px solid var(--line)}
+.lg .o{grid-column:1/-1}
+.lg .x{min-height:40px;padding:0;border:1px solid var(--line);background:transparent;border-radius:6px;cursor:pointer;font-size:18px;color:var(--muted)}
+.edit-tete{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.sauve{font:500 13px var(--f-mono);color:var(--muted)}
+.sauve.bad{color:var(--bad)}
+.moyl{margin-top:14px;font-weight:600}
+.moyl span{font:700 1.4rem var(--f-display);margin-left:6px}
+.sm-tab{display:grid;gap:0;margin-top:16px}
+.sm-l{display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.msg{margin-top:10px;font-size:14px}
+.note-info{color:var(--muted);font-size:14px;margin-top:12px}
+.zone{margin-top:24px;padding-top:16px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+@media (max-width:759px){
+  .grille{grid-template-columns:minmax(0,1fr)}
+  .cahier{padding-left:42px}
+  .cahier::before{left:26px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .btn,.tab,.item{transition:background-color .15s,border-color .15s}
+}
+</style></head>
+<body>
+<div id="app"></div>
+<noscript><p style="padding:16px">Ce site a besoin de JavaScript pour fonctionner.</p></noscript>
+<script>
+(function () {
+"use strict";
+
+const DEF = {
+  nom: "Lycée Scientifique Catholique Robert Matllé",
+  annee: "2026-2027",
+  message: "Saisissez le matricule de l’élève pour consulter ses notes. Les notes sont saisies par l’administration de l’établissement."
+};
+const PERIODES = [["T1", "1er trimestre"], ["T2", "2e trimestre"], ["T3", "3e trimestre"]];
+const ITER = 120000;
+const $app = document.getElementById("app");
+const S = { snap: null, etat: "chargement", mat: "", res: null, erreur: "", cherche: false, perP: "T1" };
+
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const norm = m => String(m || "").trim().toUpperCase().replace(/\s+/g, "");
+const num = v => {
+  if (v === null || v === undefined || v === "") return null;
+  const n = Number(String(v).replace(",", "."));
+  return Number.isFinite(n) ? n : null;
+};
+const fmt = n => (n == null ? "–" : n.toLocaleString("fr-FR", { maximumFractionDigits: 2 }));
+const moy = rows => {
+  let s = 0, c = 0;
+  for (const r of rows || []) {
+    const n = num(r.n), k = num(r.c);
+    if (n != null && k != null && k > 0) { s += n * k; c += k; }
+  }
+  return c ? s / c : null;
+};
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const hex = u8 => Array.from(u8, b => b.toString(16).padStart(2, "0")).join("");
+const fmtDate = iso => { try { return new Date(iso).toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" }); } catch (e) { return ""; } };
+const classeNote = n => (n >= 14 ? "bon" : n < 10 ? "bas" : "");
+
+async function derive(matricule, salt) {
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(norm(matricule)), "PBKDF2", false, ["deriveBits"]);
+  const bits = new Uint8Array(await crypto.subtle.deriveBits({ name: "PBKDF2", salt: salt, iterations: ITER, hash: "SHA-256" }, base, 384));
+  const key = await crypto.subtle.importKey("raw", bits.slice(16, 48), "AES-GCM", false, ["encrypt", "decrypt"]);
+  return { loc: hex(bits.slice(0, 16)), key: key };
+}
+
+async function chercher(valeur) {
+  const mat = norm(valeur);
+  S.mat = String(valeur || "").trim();
+  S.res = null; S.erreur = "";
+  if (!mat) { S.erreur = "Saisissez le matricule de l’élève."; render(); focusMat(); return; }
+  if (!window.crypto || !crypto.subtle) { S.erreur = "Ce navigateur ne permet pas d’ouvrir les notes. Essayez avec un autre navigateur."; render(); return; }
+  S.cherche = true; render();
+  try {
+    const d = await derive(mat, unb64(S.snap.salt));
+    const rec = S.snap.eleves.find(x => x.l === d.loc);
+    if (!rec) throw new Error("absent");
+    const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(rec.iv) }, d.key, unb64(rec.ct));
+    S.res = JSON.parse(new TextDecoder().decode(pt));
+    S.perP = "T1";
+  } catch (e) {
+    S.res = null;
+    S.erreur = "Matricule introuvable. Vérifiez la saisie, ou contactez l’administration de l’établissement.";
+  }
+  S.cherche = false; render();
+  if (S.erreur) focusMat();
+}
+function focusMat() { const i = document.getElementById("mat"); if (i) i.focus(); }
+
+function vue() {
+  const snap = S.snap;
+  const ec = (snap && snap.ecole) || DEF;
+  const publie = !!(snap && snap.eleves && snap.eleves.length);
+  let h = '<header class="bar"><div class="id"><p class="kicker">Notes en ligne</p><h1>' + esc(ec.nom) + '</h1><p class="sub">Année scolaire ' + esc(ec.annee) + "</p></div></header>";
+  h += '<main><section class="intro"><h2>Notes de votre enfant</h2><p class="lead">' + esc(ec.message || DEF.message) + "</p>";
+  h += '<form id="f-mat" class="recherche" autocomplete="off"><label for="mat">Matricule de l’élève</label><div class="champ">' +
+    '<input id="mat" name="mat" type="text" autocapitalize="characters" spellcheck="false" value="' + esc(S.mat) + '"' + (publie ? "" : " disabled") + ">" +
+    '<button class="btn primary" type="submit"' + (publie && !S.cherche ? "" : " disabled") + ">" + (S.cherche ? "Recherche…" : "Voir les notes") + "</button></div>";
+  h += S.erreur ? '<p class="err" role="alert">' + esc(S.erreur) + "</p>" : '<p class="aide">Le matricule figure sur la carte scolaire et sur le bulletin de l’élève.</p>';
+  h += "</form>";
+  if (S.etat === "chargement") h += '<p class="vide">Chargement des notes…</p>';
+  else if (S.etat === "erreur") h += '<p class="err">Impossible de charger les notes pour le moment. Réessayez dans quelques minutes.</p>';
+  else if (!publie) h += '<p class="vide">Les notes ne sont pas encore publiées. Revenez plus tard.</p>';
+  else if (snap.publieLe) h += '<p class="maj">Notes mises à jour le ' + esc(fmtDate(snap.publieLe)) + "</p>";
+  h += "</section>";
+  if (S.res) h += carte(S.res);
+  return h + "</main>";
+}
+
+function carte(r) {
+  const notes = r.notes || {};
+  const pers = PERIODES.filter(p => (notes[p[0]] || []).length);
+  let h = '<section class="cahier" aria-live="polite"><div class="eleve"><h3>' + esc(r.nom) + " " + esc(r.prenoms) + '</h3><span class="cl">' + esc(r.classe) + '</span></div><p class="mat">Matricule ' + esc(r.matricule) + "</p>";
+  if (!pers.length) return h + '<p class="vide">Aucune note n’est publiée pour cet élève pour le moment.</p><button class="btn nouv" data-act="reset" type="button">Nouvelle recherche</button></section>';
+  if (!pers.some(p => p[0] === S.perP)) S.perP = pers[0][0];
+  const rows = notes[S.perP];
+  const m = moy(rows);
+  h += '<div class="pers" role="tablist" aria-label="Période">' + pers.map(p => '<button type="button" role="tab" class="tab" data-act="perP" data-v="' + p[0] + '" aria-selected="' + (p[0] === S.perP) + '">' + p[1] + "</button>").join("") + "</div>";
+  h += '<ul class="lignes"><li class="ligne tete"><span>Matière</span><span style="text-align:right">Coef.</span><span style="text-align:right">Note /20</span></li>';
+  h += rows.map(x => '<li class="ligne"><span><span class="nom">' + esc(x.m) + "</span>" + (x.o ? '<span class="obs">' + esc(x.o) + "</span>" : "") + '</span><span class="coef">' + fmt(num(x.c)) + '</span><span class="note ' + classeNote(num(x.n)) + '">' + fmt(num(x.n)) + "</span></li>").join("") + "</ul>";
+  if (m != null) {
+    h += '<div class="moy"><span class="lib">Moyenne générale</span><span class="val">' + fmt(Math.round(m * 100) / 100) + '</span><span class="sur">/ 20</span></div><div class="jauge' + (m < 10 ? " bas" : "") + '"><i style="width:' + Math.max(0, Math.min(100, m * 5)) + '%"></i></div>';
+  }
+  const a = r.app && r.app[S.perP];
+  if (a) h += '<p class="appr"><b>Appréciation</b>' + esc(a) + "</p>";
+  return h + '<button class="btn nouv" data-act="reset" type="button">Nouvelle recherche</button></section>';
+}
+
+function render() { $app.innerHTML = '<div class="wrap">' + vue() + "</div>"; }
+
+$app.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  if (b.dataset.act === "perP") { S.perP = b.dataset.v; render(); }
+  else if (b.dataset.act === "reset") { S.res = null; S.mat = ""; S.erreur = ""; render(); focusMat(); }
+});
+$app.addEventListener("submit", e => {
+  if (e.target.id === "f-mat") { e.preventDefault(); chercher(e.target.elements.mat.value); }
+});
+
+render();
+fetch("notes.json?v=" + Date.now(), { cache: "no-store" })
+  .then(r => { if (!r.ok) throw new Error("http"); return r.json(); })
+  .then(j => { if (!j || !Array.isArray(j.eleves)) throw new Error("format"); S.snap = j; S.etat = "ok"; })
+  .catch(() => { S.etat = "erreur"; })
+  .then(() => { render(); });
+})();
+</script>
+</body></html>
